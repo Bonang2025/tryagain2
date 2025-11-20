@@ -612,28 +612,28 @@ h6 { font-size: var(--font-size-base); }
 }
 
 .carousel-track {
-  display: flex;       /* already set but restated to be safe */
-  flex-wrap: nowrap;   /* prevent wrapping so all items stay on one line */
-  width: max-content;  /* allow the track to grow to fit every item */
-  transition: transform 0.3s ease; /* keep your existing transition */
+  display: flex;
+  transition: transform 0.3s ease;
 }
 
 .carousel-item {
   min-width: 0;
   flex-shrink: 0;
   flex-grow: 0;
-  /* preserve responsive widths below via width instead of flex-basis */
-  width: 100%;
-  padding-left: var(--spacing-4); /* keep your padding if desired */
+  flex-basis: 100%;
+  padding-left: var(--spacing-4);
 }
 
 @media (min-width: 768px) {
-  .carousel-item { width: 50%; }
+  .carousel-item {
+    flex-basis: 50%;
+  }
 }
 
 @media (min-width: 1024px) {
-  .carousel-item { width: 33.333333%; }
-}
+  .carousel-item {
+    flex-basis: 33.333333%;
+  }
 }
 
 .carousel-nav {
