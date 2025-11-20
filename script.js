@@ -227,6 +227,69 @@
     });
 
     // init
+        // --- Swipe / Drag Support ---
+    let startX = 0;
+    let currentX = 0;
+    let isDragging = false;
+    let hasMoved = false;
+
+    function pointerDown(clientX) {
+      startX = clientX;
+      currentX = clientX;
+      isDragging = true;
+      hasMoved = false;
+      track.style.transition = 'none'; // Disable animation while dragging
+    }
+
+    function pointerMove(clientX) {
+      if (!isDragging) return;
+
+      currentX = clientX;
+      const dx = currentX - startX;
+
+      if (Math.abs(dx) > 5) hasMoved = true;
+
+      // Calculate drag offset relative to screen width
+      const dragPercent = (dx / track.clientWidth) * 100;
+
+      const currentSlide = getCurrentSlide();
+      const targetX = -(currentSlide * 100) + dragPercent;
+
+      track.style.transform = `translateX(${targetX}%)`;
+    }
+
+    function pointerUp() {
+      if (!isDragging) return;
+      isDragging = false;
+
+      const dx = currentX - startX;
+
+      const threshold = 50; // px needed for swipe
+
+      // Restore animation
+      track.style.transition = 'transform 0.35s ease';
+
+      if (dx < -threshold) {
+        nextSlide();
+      } else if (dx > threshold) {
+        prevSlide();
+      } else {
+        updateCarousel(); // snap back to current slide
+      }
+    }
+
+    // Touch events
+    track.addEventListener('touchstart', e => pointerDown(e.touches[0].clientX));
+    track.addEventListener('touchmove', e => {
+      pointerMove(e.touches[0].clientX);
+    });
+    track.addEventListener('touchend', pointerUp);
+
+    // Mouse events
+    track.addEventListener('mousedown', e => pointerDown(e.clientX));
+    window.addEventListener('mousemove', e => pointerMove(e.clientX));
+    window.addEventListener('mouseup', pointerUp);
+
     updateCarousel();
   });
 })();
