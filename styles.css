@@ -1099,3 +1099,23 @@ img {
   min-height: 3.5em;
 }
 
+/* Base size (mobile) */
+.responsive-logo {
+  height: 4rem;   /* 64px */
+  width: auto;
+  max-width: 250px; /* prevents the logo from being too large */
+}
+
+/* Tablets */
+@media (min-width: 640px) {
+  .responsive-logo {
+    height: 5rem;  /* 80px */
+  }
+}
+
+/* Desktops */
+@media (min-width: 1024px) {
+  .responsive-logo {
+    height: 6rem;  /* 96px */
+  }
+}
