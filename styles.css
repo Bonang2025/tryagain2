@@ -1121,12 +1121,13 @@ img {
   }
 }
 
-/* Mobile-specific width control for hero button */
 @media (max-width: 767px) {
   .hero-btn-mobile {
-    width: auto;
-    padding-left: 1.25rem;  /* reduce width */
-    padding-right: 1.25rem; /* reduce width */
+    width: auto !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
     display: inline-flex;
     justify-content: center;
     align-items: center;
