@@ -3,20 +3,60 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Our Services | BrightSmile Dental</title>
-    <meta name="description" content="Comprehensive dental care tailored to your needs. From routine check-ups to advanced treatments." />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Our Services | Dr MC Molapo Dentist</title>
+    <meta name="description" content="Explore our full range of dental services including dental cleanings, dental fillings, dentures, crown and bridge, tooth extraction, teeth whitening, treatment of gum infections, veneers, orthodontic braces and specialist referrals."/>
+
+    <link rel="preload" as="style" href="styles.css">
+
+    
+    <link rel="stylesheet" href="/fonts/poppins.css">
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+    <meta property="og:title" content="Our Services | Dr MC Molapo Dentist" />
+    <meta property="og:description" content= "Explore our full range of dental services including dental cleanings, dental fillings, dentures, crown and bridge, tooth extraction, teeth whitening, treatment of gum infections, veneers, orthodontic braces and specialist referrals."/>
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="logo.png" />
+    <meta property="og:url" content="https://molapodental.co.za/services" />
+
+    <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Dentist",
+    "name": "Dr MC Molapo Dentist",
+    "image": "https://yourwebsite.com/images/clinic-photo.jpg",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "31 Park Road",
+      "addressLocality": "Bloemfontein",
+      "postalCode": "9320",
+      "addressCountry": "ZA"
+    },
+    "telephone": "+27514300927",
+    "url": "https://molapodental.co.za",
+    "openingHours": [
+      "Mo 08:30-16:30",
+      "Tu 08:30-16:30",
+      "We 08:30-16:30",
+      "Th 08:30-16:30",
+      "Fr 08:30-16:30",
+      "Sa 08:30-12:30", 
+    ],
+    "description": "Trusted, gentle dentist in Bloemfontein providing comprehensive dental care in a clean, comfortable clinic."
+  }
+  </script>
   </head>
+  
   <body>
+    
     <!-- Navigation -->
     <nav class="nav">
       <div class="container nav-container">
         <a href="index.html" class="flex items-center">
           <img src="Black_Logo.webp" alt="Dr MC Molapo Dentist" style="height: 3rem; width: auto;" />
         </a>
+
+        <!-- Desktop Navigation -->
         <div class="nav-links">
           <a href="index.html" class="nav-link">Home</a>
           <a href="services.html" class="nav-link active">Services</a>
@@ -30,20 +70,24 @@
             (051) 430-0927
           </a>
         </div>
+
+        <!-- Mobile menu button -->
         <button class="mobile-menu-btn">
           <svg class="icon-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M3 6h18M3 18h18" />
           </svg>
         </button>
       </div>
+
+      <!-- Mobile Navigation -->
       <div class="mobile-menu">
         <a href="index.html" class="mobile-menu-link">Home</a>
         <a href="services.html" class="mobile-menu-link active">Services</a>
         <a href="about.html" class="mobile-menu-link">About</a>
         <a href="gallery.html" class="mobile-menu-link">Gallery</a>
         <a href="contact.html" class="mobile-menu-link">Contact</a>
-        <div style="padding: 0 var(--spacing-4); padding-top: var(--spacing-2);">
-          <a href="tel:0514300927" class="btn btn-default btn-full btn-rounded-full">
+        <div style="padding: 0 var(--spacing-4); padding-top: var(--spacing-2); text-align: center;">
+          <a href="tel:0514300927" class="btn btn-default btn-rounded-full mobile-call-btn">
             <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
             </svg>
