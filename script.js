@@ -609,26 +609,58 @@
   }
 })();
 
+// Before/After Reveal Slider — Hold + Drag (Desktop) + Touch Drag (Mobile)
 document.querySelectorAll('.before-after-wrapper').forEach(wrapper => {
   const afterImg = wrapper.querySelector('.after-img');
   const handle = wrapper.querySelector('.slider-handle');
 
-  wrapper.addEventListener('mousemove', (e) => {
-    const rect = wrapper.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const percent = x / rect.width;
+  let dragging = false;
 
-    afterImg.style.clipPath = `inset(0 0 0 ${percent * 100}%)`;
-    handle.style.left = `${percent * 100}%`;
+  function updateSlider(clientX) {
+    const rect = wrapper.getBoundingClientRect();
+    let x = clientX - rect.left;
+
+    // Boundaries
+    if (x < 0) x = 0;
+    if (x > rect.width) x = rect.width;
+
+    const percent = (x / rect.width) * 100;
+
+    afterImg.style.clipPath = `inset(0 0 0 ${percent}%)`;
+    handle.style.left = `${percent}%`;
+  }
+
+  // -- DESKTOP / TOUCH (Unified via Pointer Events) --
+  wrapper.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0 && e.pointerType === 'mouse') return; // Only left mouse button
+    dragging = true;
+
+    wrapper.setPointerCapture(e.pointerId);
+    updateSlider(e.clientX);
   });
 
-  wrapper.addEventListener('touchmove', (e) => {
-    const rect = wrapper.getBoundingClientRect();
-    const x = e.touches[0].clientX - rect.left;
-    const percent = x / rect.width;
+  wrapper.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    updateSlider(e.clientX);
 
-    afterImg.style.clipPath = `inset(0 0 0 ${percent * 100}%)`;
-    handle.style.left = `${percent * 100}%`;
+    // Disable scrolling while dragging on touch devices
+    if (e.pointerType === 'touch') {
+      e.preventDefault();
+    }
+  });
+
+  wrapper.addEventListener('pointerup', () => {
+    dragging = false;
+  });
+
+  wrapper.addEventListener('pointercancel', () => {
+    dragging = false;
+  });
+
+  wrapper.addEventListener('pointerleave', (e) => {
+    // Only stop on mouse leave; touch leave shouldn't end dragging
+    if (e.pointerType === 'mouse') dragging = false;
   });
 });
+
 
