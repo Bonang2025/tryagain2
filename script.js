@@ -609,58 +609,54 @@
   }
 })();
 
-// Before/After Reveal Slider — Hold + Drag (Desktop) + Touch Drag (Mobile)
+// --- HIGH PERFORMANCE BEFORE/AFTER SLIDER ---
 document.querySelectorAll('.before-after-wrapper').forEach(wrapper => {
   const afterImg = wrapper.querySelector('.after-img');
   const handle = wrapper.querySelector('.slider-handle');
 
   let dragging = false;
+  let rect = null;
+  let rafId = null;
+  let clientXCache = 0;
 
-  function updateSlider(clientX) {
-    const rect = wrapper.getBoundingClientRect();
-    let x = clientX - rect.left;
+  function render() {
+    const x = clientXCache - rect.left;
+    let percent = (x / rect.width) * 100;
 
-    // Boundaries
-    if (x < 0) x = 0;
-    if (x > rect.width) x = rect.width;
+    if (percent < 0) percent = 0;
+    if (percent > 100) percent = 100;
 
-    const percent = (x / rect.width) * 100;
-
-    afterImg.style.clipPath = `inset(0 0 0 ${percent}%)`;
+    afterImg.style.width = `${percent}%`;
     handle.style.left = `${percent}%`;
+
+    rafId = null;
   }
 
-  // -- DESKTOP / TOUCH (Unified via Pointer Events) --
-  wrapper.addEventListener('pointerdown', (e) => {
-    if (e.button !== 0 && e.pointerType === 'mouse') return; // Only left mouse button
-    dragging = true;
-
-    wrapper.setPointerCapture(e.pointerId);
-    updateSlider(e.clientX);
-  });
-
-  wrapper.addEventListener('pointermove', (e) => {
-    if (!dragging) return;
-    updateSlider(e.clientX);
-
-    // Disable scrolling while dragging on touch devices
-    if (e.pointerType === 'touch') {
-      e.preventDefault();
+  function requestRender(clientX) {
+    clientXCache = clientX;
+    if (rafId === null) {
+      rafId = requestAnimationFrame(render);
     }
+  }
+
+  wrapper.addEventListener('pointerdown', e => {
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
+
+    dragging = true;
+    rect = wrapper.getBoundingClientRect();
+    wrapper.setPointerCapture(e.pointerId);
+
+    requestRender(e.clientX);
   });
 
-  wrapper.addEventListener('pointerup', () => {
-    dragging = false;
+  wrapper.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    requestRender(e.clientX);
   });
 
-  wrapper.addEventListener('pointercancel', () => {
-    dragging = false;
-  });
-
-  wrapper.addEventListener('pointerleave', (e) => {
-    // Only stop on mouse leave; touch leave shouldn't end dragging
-    if (e.pointerType === 'mouse') dragging = false;
-  });
+  wrapper.addEventListener('pointerup', () => dragging = false);
+  wrapper.addEventListener('pointercancel', () => dragging = false);
 });
+
 
 
