@@ -1178,7 +1178,7 @@ img {
   width: 100%;
   cursor: ew-resize;
   touch-action: pan-y;
-  overflow: hidden;
+  overflow: hidden; /* important */
 }
 
 /* BEFORE IMAGE */
@@ -1190,7 +1190,7 @@ img {
   width: 100%;
   object-fit: cover;
   z-index: 1;
-  overflow: hidden; /* <-- IMPORTANT FIX */
+  overflow: hidden;
 }
 
 /* AFTER IMAGE (revealed by slider) */
@@ -1201,12 +1201,12 @@ img {
   height: 100%;
   width: 50%;
   object-fit: cover;
-  z-index: 2;          /* <-- ensures it sits above the before image */
+  z-index: 2; /* sits above */
   overflow: hidden;
   will-change: width;
 }
 
-/* SLIDER LINE & HANDLE */
+/* SLIDER LINE + HANDLE */
 .slider-handle {
   position: absolute;
   top: 0;
@@ -1214,7 +1214,7 @@ img {
   left: 50%;
   width: 4px;
   background: hsl(var(--primary));
-  z-index: 3;        /* <-- slider on top */
+  z-index: 3; /* keep on top */
 }
 
 .slider-handle::after {
