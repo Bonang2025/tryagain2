@@ -608,3 +608,115 @@
     console.log('Service ID:', serviceId);
   }
 })();
+
+/* ===== Before & After slider behavior ===== */
+(function() {
+  const baCards = document.querySelectorAll('.ba-card');
+
+  baCards.forEach(card => {
+    const frame = card.querySelector('.ba-frame');
+    const beforeImg = card.querySelector('.ba-before');
+    const afterImg = card.querySelector('.ba-after');
+    const handle = card.querySelector('.ba-handle');
+    const track = card.querySelector('.ba-track');
+
+    // If data attributes exist, prefer them (keeps markup flexible)
+    if (card.dataset.before && beforeImg) beforeImg.src = card.dataset.before;
+    if (card.dataset.after && afterImg) afterImg.src = card.dataset.after;
+
+    let dragging = false;
+    let rect, minX, maxX, width;
+
+    function updateFromClientX(clientX) {
+      const x = Math.min(maxX, Math.max(minX, clientX));
+      const pct = ((x - minX) / width) * 100; // 0..100
+      // position handle
+      handle.style.left = pct + '%';
+      // clip the after image from the left by pct%
+      // clip-path: inset(top right bottom left)
+      afterImg.style.clipPath = `inset(0 0 0 ${pct}%)`;
+      // update ARIA value
+      handle.setAttribute('aria-valuenow', Math.round(pct));
+    }
+
+    function startDrag(e) {
+      e.preventDefault();
+      dragging = true;
+      rect = frame.getBoundingClientRect();
+      minX = rect.left;
+      maxX = rect.right;
+      width = rect.width;
+      // ensure pointer capture on touch
+      handle.classList.add('dragging');
+    }
+
+    function endDrag() {
+      dragging = false;
+      if (handle) handle.classList.remove('dragging');
+    }
+
+    function onPointerMove(e) {
+      if (!dragging) return;
+      const clientX = (e.touches ? e.touches[0].clientX : e.clientX);
+      updateFromClientX(clientX);
+    }
+
+    // init position: center (50%)
+    handle.style.left = '50%';
+    afterImg.style.clipPath = 'inset(0 0 0 50%)';
+    handle.setAttribute('aria-valuenow', 50);
+
+    // pointer events
+    handle.addEventListener('mousedown', startDrag);
+    window.addEventListener('mouseup', endDrag);
+    window.addEventListener('mousemove', onPointerMove);
+
+    // touch events
+    handle.addEventListener('touchstart', function(e){ startDrag(e); }, {passive:false});
+    window.addEventListener('touchend', endDrag, {passive:true});
+    window.addEventListener('touchmove', onPointerMove, {passive:false});
+
+    // keyboard accessibility: left/right arrows move 5%
+    handle.addEventListener('keydown', function(e) {
+      const key = e.key;
+      const current = Number(handle.getAttribute('aria-valuenow') || 50);
+      if (key === 'ArrowLeft' || key === 'ArrowDown') {
+        const next = Math.max(0, current - 5);
+        const px = frame.getBoundingClientRect().left + (next/100) * frame.getBoundingClientRect().width;
+        updateFromClientX(px);
+        e.preventDefault();
+      } else if (key === 'ArrowRight' || key === 'ArrowUp') {
+        const next = Math.min(100, current + 5);
+        const px = frame.getBoundingClientRect().left + (next/100) * frame.getBoundingClientRect().width;
+        updateFromClientX(px);
+        e.preventDefault();
+      } else if (key === 'Home') {
+        updateFromClientX(frame.getBoundingClientRect().left);
+        e.preventDefault();
+      } else if (key === 'End') {
+        updateFromClientX(frame.getBoundingClientRect().right);
+        e.preventDefault();
+      }
+    });
+
+    // Make whole track clickable to jump handle
+    track.addEventListener('click', function(e) {
+      // ignore clicks on the handle itself since those are handled by drag
+      if (e.target === handle) return;
+      const clientX = (e.touches ? e.touches[0].clientX : e.clientX);
+      rect = frame.getBoundingClientRect();
+      minX = rect.left;
+      maxX = rect.right;
+      width = rect.width;
+      updateFromClientX(clientX);
+    });
+
+    // responsive: recalc dimensions on resize
+    window.addEventListener('resize', function() {
+      rect = frame.getBoundingClientRect();
+      minX = rect.left;
+      maxX = rect.right;
+      width = rect.width;
+    });
+  });
+})();
