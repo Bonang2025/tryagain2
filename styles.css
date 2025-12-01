@@ -786,10 +786,10 @@ h6 { font-size: var(--font-size-base); }
 }
 
 /* Images */
-img {
+/*img {
   max-width: 100%;
   height: auto;
-}
+}*/
 
 .rounded-xl {
   border-radius: 0.75rem;
