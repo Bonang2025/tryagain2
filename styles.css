@@ -1168,6 +1168,7 @@ img {
 .ba-frame {
   position: relative;
   width: 100%;
+  min-height: 180px; 
   aspect-ratio: 4 / 3;   /* <— This is the missing line */
   overflow: hidden;
   border-radius: 1rem;
@@ -1203,13 +1204,13 @@ img {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 0.85rem; /* place slightly above bottom to avoid overlap */
+  bottom: 0.85rem;
   height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 30;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .ba-handle {
