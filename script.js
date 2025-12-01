@@ -613,73 +613,64 @@
 // BEFORE & AFTER IMAGE SLIDER — COMPLETE REWRITE
 // ===============================================================
 
-document.addEventListener("DOMContentLoaded", function () {
+(function () {
+  // Use .ba-card so we operate exactly on the cards in your markup
+  const cards = document.querySelectorAll('.ba-card');
 
-  const sliders = document.querySelectorAll('.ba-frame');
+  cards.forEach(card => {
+    const frame = card.querySelector('.ba-frame');
+    const beforeImg = card.querySelector('.ba-before');
+    const afterImg  = card.querySelector('.ba-after');
+    const handle    = card.querySelector('.ba-handle');
+    const track     = card.querySelector('.ba-track');
 
-  sliders.forEach(frame => {
-    const beforeImg = frame.querySelector('.ba-before img');
-    const afterImg = frame.querySelector('.ba-after img');
-    const handle = frame.querySelector('.ba-handle');
-    const track = frame.querySelector('.ba-track');
+    if (!frame || !beforeImg || !afterImg || !handle) {
+      console.warn('BA slider: missing elements in card', card);
+      return;
+    }
 
-    let rect, minX, maxX, width;
+    // ensure pointer-events are enabled on handle/track (in case your CSS elsewhere overrides)
+    if (track) track.style.pointerEvents = 'auto';
+    handle.style.pointerEvents = 'auto';
+    handle.setAttribute('role','slider');
+
+    let rect = null, minX = 0, maxX = 0, width = 0;
     let dragging = false;
 
-    // -----------------------------------------------------------
-    // INITIAL SETUP
-    // -----------------------------------------------------------
     function computeBounds() {
       rect = frame.getBoundingClientRect();
       minX = rect.left;
       maxX = rect.right;
-      width = rect.width;
+      width = rect.width || 1;
     }
 
-    // Wait for images to load before computing the layout
-    function init() {
-      computeBounds();
-
-      // Set initial clip to 50%
-      const clipValue = `inset(0 0 0 50%)`;
-      afterImg.style.clipPath = clipValue;
-      afterImg.style.webkitClipPath = clipValue;
-
-      handle.style.left = "50%";
-      handle.setAttribute("aria-valuenow", 50);
+    // safe clip setter: both clip-path and -webkit-clip-path
+    function setClip(pct) {
+      const clip = `inset(0 0 0 ${pct}%)`;
+      afterImg.style.clipPath = clip;
+      afterImg.style.webkitClipPath = clip;
+      handle.style.left = pct + '%';
+      handle.setAttribute('aria-valuenow', Math.round(pct));
     }
 
-    // Recompute bounds on resize
-    window.addEventListener("resize", computeBounds);
-
-    // -----------------------------------------------------------
-    // UPDATE SLIDER POSITION
-    // -----------------------------------------------------------
     function updateFromClientX(clientX) {
+      if (!rect) computeBounds();
       const x = Math.min(maxX, Math.max(minX, clientX));
       const pct = ((x - minX) / width) * 100;
-
-      handle.style.left = pct + "%";
-
-      const clipValue = `inset(0 0 0 ${pct}%)`;
-      afterImg.style.clipPath = clipValue;
-      afterImg.style.webkitClipPath = clipValue;
-
-      handle.setAttribute("aria-valuenow", Math.round(pct));
+      setClip(pct);
     }
 
-    // -----------------------------------------------------------
-    // DRAG HANDLERS
-    // -----------------------------------------------------------
-    function startDrag(e) {
+    function startDragFromEvent(e) {
       dragging = true;
-      const clientX = e.clientX ?? (e.touches ? e.touches[0].clientX : 0);
+      // compute bounds at start (useful if layout changed)
+      computeBounds();
+      const clientX = ('touches' in e && e.touches.length) ? e.touches[0].clientX : e.clientX;
       updateFromClientX(clientX);
     }
 
-    function onPointerMove(e) {
+    function onMoveFromEvent(e) {
       if (!dragging) return;
-      const clientX = e.clientX ?? (e.touches ? e.touches[0].clientX : 0);
+      const clientX = ('touches' in e && e.touches.length) ? e.touches[0].clientX : e.clientX;
       updateFromClientX(clientX);
     }
 
@@ -687,64 +678,86 @@ document.addEventListener("DOMContentLoaded", function () {
       dragging = false;
     }
 
-    // -----------------------------------------------------------
-    // EVENT LISTENERS (MOUSE + TOUCH)
-    // -----------------------------------------------------------
-
-    // MOUSE
-    handle.addEventListener("mousedown", startDrag);
-    window.addEventListener("mousemove", onPointerMove);
-    window.addEventListener("mouseup", endDrag);
-
-    // TOUCH
-    handle.addEventListener(
-      "touchstart",
-      function (e) {
-        e.preventDefault(); // prevent scroll while dragging
-        startDrag(e.touches[0]);
-      },
-      { passive: false }
-    );
-
-    window.addEventListener(
-      "touchmove",
-      function (e) {
-        if (!dragging) return;
-        e.preventDefault();
-        onPointerMove(e.touches[0]);
-      },
-      { passive: false }
-    );
-
-    window.addEventListener("touchend", endDrag);
-
-    // -----------------------------------------------------------
-    // TRACK CLICK TO MOVE HANDLE
-    // -----------------------------------------------------------
-    if (track) {
-      track.addEventListener("click", (e) => {
-        updateFromClientX(e.clientX);
-      });
+    // init handle position once images are loaded (avoid measurement race)
+    function initOnceLoaded() {
+      // compute bounds and set center
+      computeBounds();
+      setClip(50);
     }
 
-    // INIT AFTER IMAGES LOAD
-    if (beforeImg.complete && afterImg.complete) {
-      init();
-    } else {
-      // Wait for both images
-      let loaded = 0;
-      [beforeImg, afterImg].forEach(img => {
-        if (img.complete) {
+    // wait for both images to be ready
+    let loaded = 0;
+    [beforeImg, afterImg].forEach(img => {
+      if (img.complete) {
+        loaded++;
+        if (loaded === 2) initOnceLoaded();
+      } else {
+        img.addEventListener('load', () => {
           loaded++;
-          if (loaded === 2) init();
-        } else {
-          img.onload = () => {
-            loaded++;
-            if (loaded === 2) init();
-          };
-        }
+          if (loaded === 2) initOnceLoaded();
+        });
+        img.addEventListener('error', () => {
+          // still attempt init even if images failed to load
+          loaded++;
+          if (loaded === 2) initOnceLoaded();
+        });
+      }
+    });
+
+    // MOUSE listeners
+    handle.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      startDragFromEvent(e);
+    });
+    window.addEventListener('mousemove', onMoveFromEvent);
+    window.addEventListener('mouseup', endDrag);
+
+    // TOUCH listeners
+    handle.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      startDragFromEvent(e);
+    }, { passive: false });
+    window.addEventListener('touchmove', (e) => {
+      if (!dragging) return;
+      e.preventDefault();
+      onMoveFromEvent(e);
+    }, { passive: false });
+    window.addEventListener('touchend', endDrag);
+
+    // track click to jump handle
+    if (track) {
+      track.addEventListener('click', (e) => {
+        const clientX = e.clientX;
+        computeBounds();
+        updateFromClientX(clientX);
       });
     }
-  });
 
-});
+    // keyboard accessibility (left/right/Home/End)
+    handle.addEventListener('keydown', (e) => {
+      const key = e.key;
+      const cur = Number(handle.getAttribute('aria-valuenow') || 50);
+      if (key === 'ArrowLeft' || key === 'ArrowDown') {
+        setClip(Math.max(0, cur - 5));
+        e.preventDefault();
+      } else if (key === 'ArrowRight' || key === 'ArrowUp') {
+        setClip(Math.min(100, cur + 5));
+        e.preventDefault();
+      } else if (key === 'Home') {
+        setClip(0); e.preventDefault();
+      } else if (key === 'End') {
+        setClip(100); e.preventDefault();
+      }
+    });
+
+    // update geometry on resize
+    window.addEventListener('resize', () => {
+      computeBounds();
+    });
+
+    // defensive compute at start (in case images were already there)
+    computeBounds();
+    // initial clip in case load listeners miss
+    setClip(50);
+  });
+})();
