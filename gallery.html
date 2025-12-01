@@ -209,6 +209,126 @@
     </section>
 
     <!-- Before & After Section -->
+    <!-- Before & After Section -->
+<section class="section bg-background" id="before-afters">
+  <div class="container">
+    <div class="max-w-3xl mx-auto text-center mb-8 animate-slide-up">
+      <h2 class="text-3xl font-bold text-foreground mb-2">Before &amp; Afters</h2>
+      <p class="text-sm text-muted-foreground">move the slider to the right to see the before, and then move the slider to the left to see the after.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Repeat this card for 6 items - change data-before/data-after src to your images -->
+      <div class="ba-card group relative overflow-hidden rounded-2xl animate-fade-in" data-before="assets/before1.jpg" data-after="assets/beforeafter/after1.webp" style="animation-delay: 0s;">
+        <div class="ba-frame" style="aspect-ratio: 4/3;">
+          <img class="ba-image ba-before" src="assets/beforeafter/before1.webp" alt="Before image" />
+          <img class="ba-image ba-after" src="assets/beforeafter/after1.webp" alt="After image" />
+          <!-- draggable handle + track -->
+          <div class="ba-track" aria-hidden="true">
+            <div class="ba-line"></div>
+            <div class="ba-handle" role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+              <!-- SVG with two arrowheads: left + right (no tails) -->
+              <svg viewBox="0 0 40 40" width="20" height="20" aria-hidden="true" focusable="false">
+                <!-- left pointing arrowhead (on the left half of the circle) -->
+                <g transform="translate(6,10)">
+                  <path d="M14 0 L0 8 L14 16 Z" fill="hsl(var(--primary))"></path>
+                </g>
+                <!-- right pointing arrowhead (on the right half of the circle) -->
+                <g transform="translate(20,10)">
+                  <path d="M0 0 L14 8 L0 16 Z" fill="hsl(var(--primary))"></path>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-3 flex items-center justify-between px-1">
+          <span class="text-sm text-muted-foreground">before</span>
+          <span class="text-sm text-muted-foreground">after</span>
+        </div>
+      </div>
+
+      <!-- Duplicate the card 5 more times, adjust data-before/data-after & animation-delay -->
+      <div class="ba-card group relative overflow-hidden rounded-2xl animate-fade-in" data-before="assets/before2.jpg" data-after="assets/after2.jpg" style="animation-delay: 0.05s;">
+        <div class="ba-frame" style="aspect-ratio: 4/3;">
+          <img class="ba-image ba-before" src="assets/before2.jpg" alt="Before image" />
+          <img class="ba-image ba-after" src="assets/after2.jpg" alt="After image" />
+          <div class="ba-track" aria-hidden="true">
+            <div class="ba-line"></div>
+            <div class="ba-handle" role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+              <svg viewBox="0 0 40 40" width="20" height="20" aria-hidden="true" focusable="false">
+                <g transform="translate(6,10)"><path d="M14 0 L0 8 L14 16 Z" fill="hsl(var(--primary))"></path></g>
+                <g transform="translate(20,10)"><path d="M0 0 L14 8 L0 16 Z" fill="hsl(var(--primary))"></path></g>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="mt-3 flex items-center justify-between px-1">
+          <span class="text-sm text-muted-foreground">before</span>
+          <span class="text-sm text-muted-foreground">after</span>
+        </div>
+      </div>
+
+      <div class="ba-card group relative overflow-hidden rounded-2xl animate-fade-in" data-before="assets/before3.jpg" data-after="assets/after3.jpg" style="animation-delay: 0.1s;">
+        <div class="ba-frame" style="aspect-ratio: 4/3;">
+          <img class="ba-image ba-before" src="assets/before3.jpg" alt="Before image" />
+          <img class="ba-image ba-after" src="assets/after3.jpg" alt="After image" />
+          <div class="ba-track" aria-hidden="true"><div class="ba-line"></div><div class="ba-handle" role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+            <svg viewBox="0 0 40 40" width="20" height="20" aria-hidden="true" focusable="false">
+              <g transform="translate(6,10)"><path d="M14 0 L0 8 L14 16 Z" fill="hsl(var(--primary))"></path></g>
+              <g transform="translate(20,10)"><path d="M0 0 L14 8 L0 16 Z" fill="hsl(var(--primary))"></path></g>
+            </svg>
+          </div></div>
+        </div>
+        <div class="mt-3 flex items-center justify-between px-1"><span class="text-sm text-muted-foreground">before</span><span class="text-sm text-muted-foreground">after</span></div>
+      </div>
+
+      <div class="ba-card group relative overflow-hidden rounded-2xl animate-fade-in" data-before="assets/before4.jpg" data-after="assets/after4.jpg" style="animation-delay: 0.15s;">
+        <div class="ba-frame" style="aspect-ratio: 4/3;">
+          <img class="ba-image ba-before" src="assets/before4.jpg" alt="Before image" />
+          <img class="ba-image ba-after" src="assets/after4.jpg" alt="After image" />
+          <div class="ba-track" aria-hidden="true"><div class="ba-line"></div><div class="ba-handle" role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+            <svg viewBox="0 0 40 40" width="20" height="20" aria-hidden="true" focusable="false">
+              <g transform="translate(6,10)"><path d="M14 0 L0 8 L14 16 Z" fill="hsl(var(--primary))"></path></g>
+              <g transform="translate(20,10)"><path d="M0 0 L14 8 L0 16 Z" fill="hsl(var(--primary))"></path></g>
+            </svg>
+          </div></div>
+        </div>
+        <div class="mt-3 flex items-center justify-between px-1"><span class="text-sm text-muted-foreground">before</span><span class="text-sm text-muted-foreground">after</span></div>
+      </div>
+
+      <div class="ba-card group relative overflow-hidden rounded-2xl animate-fade-in" data-before="assets/before5.jpg" data-after="assets/after5.jpg" style="animation-delay: 0.2s;">
+        <div class="ba-frame" style="aspect-ratio: 4/3;">
+          <img class="ba-image ba-before" src="assets/before5.jpg" alt="Before image" />
+          <img class="ba-image ba-after" src="assets/after5.jpg" alt="After image" />
+          <div class="ba-track" aria-hidden="true"><div class="ba-line"></div><div class="ba-handle" role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+            <svg viewBox="0 0 40 40" width="20" height="20" aria-hidden="true" focusable="false">
+              <g transform="translate(6,10)"><path d="M14 0 L0 8 L14 16 Z" fill="hsl(var(--primary))"></path></g>
+              <g transform="translate(20,10)"><path d="M0 0 L14 8 L0 16 Z" fill="hsl(var(--primary))"></path></g>
+            </svg>
+          </div></div>
+        </div>
+        <div class="mt-3 flex items-center justify-between px-1"><span class="text-sm text-muted-foreground">before</span><span class="text-sm text-muted-foreground">after</span></div>
+      </div>
+
+      <div class="ba-card group relative overflow-hidden rounded-2xl animate-fade-in" data-before="assets/before6.jpg" data-after="assets/after6.jpg" style="animation-delay: 0.25s;">
+        <div class="ba-frame" style="aspect-ratio: 4/3;">
+          <img class="ba-image ba-before" src="assets/before6.jpg" alt="Before image" />
+          <img class="ba-image ba-after" src="assets/after6.jpg" alt="After image" />
+          <div class="ba-track" aria-hidden="true"><div class="ba-line"></div><div class="ba-handle" role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+            <svg viewBox="0 0 40 40" width="20" height="20" aria-hidden="true" focusable="false">
+              <g transform="translate(6,10)"><path d="M14 0 L0 8 L14 16 Z" fill="hsl(var(--primary))"></path></g>
+              <g transform="translate(20,10)"><path d="M0 0 L14 8 L0 16 Z" fill="hsl(var(--primary))"></path></g>
+            </svg>
+          </div></div>
+        </div>
+        <div class="mt-3 flex items-center justify-between px-1"><span class="text-sm text-muted-foreground">before</span><span class="text-sm text-muted-foreground">after</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 
 
      <!-- Footer -->
