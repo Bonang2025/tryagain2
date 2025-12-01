@@ -609,114 +609,142 @@
   }
 })();
 
-/* ===== Before & After slider behavior ===== */
-(function() {
-  const baCards = document.querySelectorAll('.ba-card');
+// ===============================================================
+// BEFORE & AFTER IMAGE SLIDER — COMPLETE REWRITE
+// ===============================================================
 
-  baCards.forEach(card => {
-    const frame = card.querySelector('.ba-frame');
-    const beforeImg = card.querySelector('.ba-before');
-    const afterImg = card.querySelector('.ba-after');
-    const handle = card.querySelector('.ba-handle');
-    const track = card.querySelector('.ba-track');
+document.addEventListener("DOMContentLoaded", function () {
 
-    // If data attributes exist, prefer them (keeps markup flexible)
-    if (card.dataset.before && beforeImg) beforeImg.src = card.dataset.before;
-    if (card.dataset.after && afterImg) afterImg.src = card.dataset.after;
+  const sliders = document.querySelectorAll('.ba-frame');
 
-    let dragging = false;
+  sliders.forEach(frame => {
+    const beforeImg = frame.querySelector('.ba-before img');
+    const afterImg = frame.querySelector('.ba-after img');
+    const handle = frame.querySelector('.ba-handle');
+    const track = frame.querySelector('.ba-track');
+
     let rect, minX, maxX, width;
+    let dragging = false;
 
-    function updateFromClientX(clientX) {
-      const x = Math.min(maxX, Math.max(minX, clientX));
-      const pct = ((x - minX) / width) * 100; // 0..100
-      // position handle
-      handle.style.left = pct + '%';
-      // clip the after image from the left by pct%
-      // clip-path: inset(top right bottom left)
-      afterImg.style.clipPath = `inset(0 0 0 ${pct}%)`;
-      // update ARIA value
-      handle.setAttribute('aria-valuenow', Math.round(pct));
-    }
-
-    function startDrag(e) {
-      e.preventDefault();
-      dragging = true;
+    // -----------------------------------------------------------
+    // INITIAL SETUP
+    // -----------------------------------------------------------
+    function computeBounds() {
       rect = frame.getBoundingClientRect();
       minX = rect.left;
       maxX = rect.right;
       width = rect.width;
-      // ensure pointer capture on touch
-      handle.classList.add('dragging');
     }
 
-    function endDrag() {
-      dragging = false;
-      if (handle) handle.classList.remove('dragging');
+    // Wait for images to load before computing the layout
+    function init() {
+      computeBounds();
+
+      // Set initial clip to 50%
+      const clipValue = `inset(0 0 0 50%)`;
+      afterImg.style.clipPath = clipValue;
+      afterImg.style.webkitClipPath = clipValue;
+
+      handle.style.left = "50%";
+      handle.setAttribute("aria-valuenow", 50);
+    }
+
+    // Recompute bounds on resize
+    window.addEventListener("resize", computeBounds);
+
+    // -----------------------------------------------------------
+    // UPDATE SLIDER POSITION
+    // -----------------------------------------------------------
+    function updateFromClientX(clientX) {
+      const x = Math.min(maxX, Math.max(minX, clientX));
+      const pct = ((x - minX) / width) * 100;
+
+      handle.style.left = pct + "%";
+
+      const clipValue = `inset(0 0 0 ${pct}%)`;
+      afterImg.style.clipPath = clipValue;
+      afterImg.style.webkitClipPath = clipValue;
+
+      handle.setAttribute("aria-valuenow", Math.round(pct));
+    }
+
+    // -----------------------------------------------------------
+    // DRAG HANDLERS
+    // -----------------------------------------------------------
+    function startDrag(e) {
+      dragging = true;
+      const clientX = e.clientX ?? (e.touches ? e.touches[0].clientX : 0);
+      updateFromClientX(clientX);
     }
 
     function onPointerMove(e) {
       if (!dragging) return;
-      const clientX = (e.touches ? e.touches[0].clientX : e.clientX);
+      const clientX = e.clientX ?? (e.touches ? e.touches[0].clientX : 0);
       updateFromClientX(clientX);
     }
 
-    // init position: center (50%)
-    handle.style.left = '50%';
-    afterImg.style.clipPath = 'inset(0 0 0 50%)';
-    handle.setAttribute('aria-valuenow', 50);
+    function endDrag() {
+      dragging = false;
+    }
 
-    // pointer events
-    handle.addEventListener('mousedown', startDrag);
-    window.addEventListener('mouseup', endDrag);
-    window.addEventListener('mousemove', onPointerMove);
+    // -----------------------------------------------------------
+    // EVENT LISTENERS (MOUSE + TOUCH)
+    // -----------------------------------------------------------
 
-    // touch events
-    handle.addEventListener('touchstart', function(e){ startDrag(e); }, {passive:false});
-    window.addEventListener('touchend', endDrag, {passive:true});
-    window.addEventListener('touchmove', onPointerMove, {passive:false});
+    // MOUSE
+    handle.addEventListener("mousedown", startDrag);
+    window.addEventListener("mousemove", onPointerMove);
+    window.addEventListener("mouseup", endDrag);
 
-    // keyboard accessibility: left/right arrows move 5%
-    handle.addEventListener('keydown', function(e) {
-      const key = e.key;
-      const current = Number(handle.getAttribute('aria-valuenow') || 50);
-      if (key === 'ArrowLeft' || key === 'ArrowDown') {
-        const next = Math.max(0, current - 5);
-        const px = frame.getBoundingClientRect().left + (next/100) * frame.getBoundingClientRect().width;
-        updateFromClientX(px);
+    // TOUCH
+    handle.addEventListener(
+      "touchstart",
+      function (e) {
+        e.preventDefault(); // prevent scroll while dragging
+        startDrag(e.touches[0]);
+      },
+      { passive: false }
+    );
+
+    window.addEventListener(
+      "touchmove",
+      function (e) {
+        if (!dragging) return;
         e.preventDefault();
-      } else if (key === 'ArrowRight' || key === 'ArrowUp') {
-        const next = Math.min(100, current + 5);
-        const px = frame.getBoundingClientRect().left + (next/100) * frame.getBoundingClientRect().width;
-        updateFromClientX(px);
-        e.preventDefault();
-      } else if (key === 'Home') {
-        updateFromClientX(frame.getBoundingClientRect().left);
-        e.preventDefault();
-      } else if (key === 'End') {
-        updateFromClientX(frame.getBoundingClientRect().right);
-        e.preventDefault();
-      }
-    });
+        onPointerMove(e.touches[0]);
+      },
+      { passive: false }
+    );
 
-    // Make whole track clickable to jump handle
-    track.addEventListener('click', function(e) {
-      // ignore clicks on the handle itself since those are handled by drag
-      if (e.target === handle) return;
-      const clientX = (e.touches ? e.touches[0].clientX : e.clientX);
-      rect = frame.getBoundingClientRect();
-      minX = rect.left;
-      maxX = rect.right;
-      width = rect.width;
-      updateFromClientX(clientX);
-    });
+    window.addEventListener("touchend", endDrag);
 
-    // responsive: recalc dimensions on resize
-    window.addEventListener('resize', function() {
-      rect = frame.getBoundingClientRect();
-      minX = rect.left;
-      maxX = rect.right;
-      width = rect.width;
-    });
+    // -----------------------------------------------------------
+    // TRACK CLICK TO MOVE HANDLE
+    // -----------------------------------------------------------
+    if (track) {
+      track.addEventListener("click", (e) => {
+        updateFromClientX(e.clientX);
+      });
+    }
+
+    // INIT AFTER IMAGES LOAD
+    if (beforeImg.complete && afterImg.complete) {
+      init();
+    } else {
+      // Wait for both images
+      let loaded = 0;
+      [beforeImg, afterImg].forEach(img => {
+        if (img.complete) {
+          loaded++;
+          if (loaded === 2) init();
+        } else {
+          img.onload = () => {
+            loaded++;
+            if (loaded === 2) init();
+          };
+        }
+      });
+    }
   });
-})();
+
+});
